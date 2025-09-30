@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>&nbsp;</title>
+  <style>
+    :root {
+      --accent: #f07f1a;
+      --dark: #111;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 18px;
+    }
+
+    .layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    form.panel {
+      width: 380px;
+      background: #fff;
+      padding: 50px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    }
+
+    .preview {
+      flex: 1;
+      background: #fff;
+      padding: 18px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    }
+
+    h2 {
+      margin: 0 0 12px 0;
+      font-size: 18px
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-top: 10px;
+      font-size: 13px
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 200px;
+      /* largura fixa */
+      height: 35px;
+      /* altura fixa */
+      resize: none;
+      /* desativa o redimensionamento manual */
+    }
+
+
+    .row {
+      display: flex;
+      gap: 8px
+    }
+
+    .row>* {
+      flex: 1
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer
+    }
+
+    button.secondary {
+      background: #666
+    }
+
+    .items {
+      margin-top: 10px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    table th,
+    table td {
+      font-size: 13px;
+      padding: 6px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: top
+    }
+
+    .muted {
+      color: #666;
+      font-size: 13px
+    }
+
+    /* PREVIEW CONTRACT STYLES */
+    .contract {
+      background: #fff;
+      padding: 18px;
+      color: #111;
+      border: 1px solid #ddd;
+      position: relative;
+      overflow: hidden
+    }
+
+    .contract .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 12px;
+      margin-bottom: 10px
+    }
+
+    .logoBox {
+      width: 240px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .companyData {
+      font-size: 12px
+    }
+
+    .contract h1 {
+      font-size: 18px;
+      margin: 10px 0;
+      text-align: center;
+      text-decoration: underline
+    }
+
+    .section {
+      margin: 10px 0;
+      font-size: 14px
+    }
+
+    .itemsTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px
+    }
+
+    .itemsTable th,
+    .itemsTable td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      font-size: 13px
+    }
+
+    .totals {
+      margin-top: 8px;
+      font-weight: 700;
+      text-align: right
+    }
+
+    .sign {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px
+    }
+
+    .sign .line {
+      width: 40%;
+      text-align: center
+    }
+
+    .small {
+      font-size: 12px;
+      color: #444
+    }
+
+    footer.note {
+      font-size: 10px;
+      color: #666;
+      margin-top: 12px
+    }
+
+    .topButtons {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      margin-bottom: 12px
+    }
+
+    .muted-small {
+      font-size: 12px;
+      color: #666
+    }
+
+    /* Marca d’água */
+    #watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-25%, -10%) rotate(-0deg);
+      opacity: 0.25;
+      width: 70%;
+      height: auto;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .contract *:not(#watermark) {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* print settings */
+    @media print {
+      body {
+        background: white
+      }
+
+      .app {
+        max-width: 100%;
+        margin: 0;
+        padding: 0
+      }
+
+      .layout {
+        flex-direction: column
+      }
+
+      form.panel,
+      .topButtons {
+        display: none
+      }
+
+      .contract {
+        border: none;
+        padding: 0
+      }
+    }
+
+    .preview-images {
+      margin: 12px 0 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .preview-images img {
+      max-width: 90%;
+      width: 90%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+      object-fit: cover;
+    }
+
+    @media (max-width:800px) {
+      .preview-images img {
+        max-width: 48%
+      }
+    }
+
+    @media (max-width:480px) {
+      .preview-images img {
+        max-width: 100%
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topButtons">
+      <div class="muted-small">&nbsp;</div>
+      <div>
+        <button id="btnPrint">Exportar / Salvar PDF</button>
+        <button id="btnReset" class="secondary">Limpar formulário</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- FORM -->
+      <form class="panel" id="form">
+        <h2>Dados do Orçamento</h2>
+        <label>Fotos do Projeto</label>
+        <input type="file" id="projectImages" accept="image/*" multiple>
+
+        <label>Nome da Empresa / Contratada</label>
+        <input type="text" id="companyName" value="SOUZA FARIA ACM LTDA">
+
+        <label>CNPJ</label>
+        <input type="text" id="companyCNPJ" value="38.076.305/0001-50">
+
+        <label>Endereço da Empresa</label>
+        <input type="text" id="companyAddress" value="RUA: SANTINHO VELOSO, QD: 32, LT: 12, SETOR: PAUZANES">
+
+        <label>Contato (Telefone / E-mail)</label>
+        <input type="text" id="companyContact" value="(64) 99268-8158 • reidoacmrv@gmail.com">
+
+        <hr>
+
+        <label>Nome do Contratante</label>
+        <input type="text" id="clientName" value="">
+
+        <label>CPF / CNPJ</label>
+        <input type="text" id="clientCPF" value="">
+
+        <label>Endereço do Contratante</label>
+        <input type="text" id="clientAddress" value="">
+
+        <hr>
+
+        <label>Modo de orçamento</label>
+        <div class="items">
+          <select id="pricingMode">
+            <option value="unit">Detalhado</option>
+            <option value="total">Valor Total</option>
+          </select>
+          <table id="itemsInputTable">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th style="width:60px">Qtd</th>
+                <th style="width:80px">Unid</th>
+                <th style="width:110px">Valor unit.</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="itemsTbody"></tbody>
+          </table>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button type="button" id="addItem">Adicionar item</button>
+            <button type="button" id="clearItems" class="secondary">Limpar itens</button>
+          </div>
+        </div>
+
+        <hr>
+
+        <label>Unidade emissora</label>
+        <select id="unitLocation">
+          <option value="Rio Verde – Goiás">Rio Verde – Goiás</option>
+          <option value="Quirinópolis – Goiás">Quirinópolis – Goiás</option>
+        </select>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button type="button" id="updatePreview">Atualizar pré-visualização</button>
+        </div>
+      </form>
+
+      <!-- PREVIEW -->
+      <div class="preview">
+        <div class="contract" id="contractPreview">
+          <<img id="watermark" src="/marca dagua.png" alt="Marca d'água">>
+
+          <div class="header">
+            <div id="logoPreview" class="logoBox">
+              <<img src="/logo rda.png" style="max-width:100%;max-height:70px;object-fit:contain" alt="logo" />
+            </div>
+            <div class="companyData">
+              <div id="previewCompanyName" style="font-weight:700">SOUZA FARIA ACM LTDA</div>
+              <div id="previewCNPJ" class="muted">CNPJ: 38.076.305/0001-50</div>
+              <div id="previewCompanyAddr" class="muted">RUA: SANTINHO VELOSO, QD: 32, LT: 12, SETOR: PAUZANES</div>
+              <div id="previewCompanyContact" class="muted">(64)99268-8158 • reidoacmrv@gmail.com</div>
+            </div>
+          </div>
+
+          <h1>ORÇAMENTO</h1>
+
+          <div id="previewImages" class="preview-images" aria-hidden="false"></div>
+
+          <div class="section">
+            <strong>CONTRATANTE</strong>
+            <div>Nome: <span id="previewClientName"></span></div>
+            <div><span id="previewClientCPF" class="muted"></span></div>
+            <div id="previewClientAddrRow">Endereço: <span id="previewClientAddr" class="muted"></span></div>
+          </div>
+
+          <div class="section">
+            <strong>CONTRATADO</strong>
+            <div id="previewContractedText" class="muted">
+              <span id="previewContractedName"></span>, pessoa jurídica de direito privado, inscrita no CNPJ sob o n.º
+              <span id="previewContractedCNPJ"></span>.
+            </div>
+          </div>
+
+          <div class="section">
+            <strong>OBJETO</strong>
+            <div>É objeto do presente orçamento a prestação dos serviços e fornecimento de:</div>
+
+            <table class="itemsTable" id="previewItemsTable">
+              <thead id="itemsTableHead"></thead>
+              <tbody></tbody>
+            </table>
+
+            <div class="totals">
+              <div>Subtotal: R$ <span id="previewSubtotal">0.00</span></div>
+              <div>Entrada (50% exemplo): R$ <span id="previewEntrada">0.00</span></div>
+              <div>Total: R$ <span id="previewTotal">0.00</span></div>
+            </div>
+          </div>
+
+          <div class="section small">
+            <div id="previewContractDate"></div>
+          </div>
+
+          <footer class="note">© 2025 REI do ACM. Todos os direitos reservados.</footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    let items = [];
+
+    function toCurrency(v) {
+      if (isNaN(v)) v = 0;
+      return Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function renderItemsInputs() {
+      const tbody = document.getElementById('itemsTbody');
+      tbody.innerHTML = '';
+      const mode = document.getElementById('pricingMode').value;
+
+      items.forEach((it, idx) => {
+        const tr = document.createElement('tr');
+        if (mode === 'unit') {
+          tr.innerHTML = `
+            <td><textarea data-idx="${idx}" data-field="desc">${it.desc || ''}</textarea></td>
+            <td><input type="number" min="0" data-idx="${idx}" data-field="qty" value="${it.qty || 1}" /></td>
+            <td><input type="text" data-idx="${idx}" data-field="unit" value="${it.unit || ''}" /></td>
+            <td><input type="number" min="0" step="0.01" data-idx="${idx}" data-field="price" value="${it.price || 0}" /></td>
+            <td><button type="button" data-idx="${idx}" class="removeItem">x</button></td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td><textarea data-idx="${idx}" data-field="desc">${it.desc || ''}</textarea></td>
+            <td colspan="2"></td>
+            <td><input type="number" min="0" step="0.01" data-idx="${idx}" data-field="total" value="${it.total || 0}" /></td>
+            <td><button type="button" data-idx="${idx}" class="removeItem">x</button></td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll('textarea, input').forEach(inp => {
+        inp.addEventListener('input', (e) => {
+          const idx = +e.target.dataset.idx;
+          const f = e.target.dataset.field;
+          if (f === 'qty') items[idx].qty = Number(e.target.value) || 0;
+          else if (f === 'price') items[idx].price = Number(e.target.value) || 0;
+          else if (f === 'total') items[idx].total = Number(e.target.value) || 0;
+          else if (f === 'desc') items[idx].desc = e.target.value;
+          else if (f === 'unit') items[idx].unit = e.target.value;
+          updatePreview();
+        });
+      });
+
+      tbody.querySelectorAll('.removeItem').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = +btn.dataset.idx;
+          items.splice(idx, 1);
+          renderItemsInputs();
+          updatePreview();
+        });
+      });
+    }
+
+    function addSampleItems() {
+      items = [
+        { desc: '01 COBERTURA EM POLICARBONATO...', qty: 1, unit: 'un', price: 0 }
+      ];
+      renderItemsInputs();
+    }
+
+    function updatePreview() {
+      // empresa / contratado
+      document.getElementById('previewCompanyName').textContent = document.getElementById('companyName').value || '';
+      document.getElementById('previewCNPJ').textContent = 'CNPJ: ' + (document.getElementById('companyCNPJ').value || '');
+      document.getElementById('previewCompanyAddr').textContent = document.getElementById('companyAddress').value || '';
+      document.getElementById('previewCompanyContact').textContent = document.getElementById('companyContact').value || '';
+
+      // contratante
+      document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '';
+      const cpfCnpjInput = document.getElementById('clientCPF').value || '';
+      const digits = cpfCnpjInput.replace(/\D/g, ''); // só números
+      let cpfCnpjLabel = 'CPF/CNPJ';
+
+      if (digits.length === 11) {
+        cpfCnpjLabel = 'CPF';
+      } else if (digits.length === 14) {
+        cpfCnpjLabel = 'CNPJ';
+      }
+
+      document.getElementById('previewClientCPF').textContent =
+        cpfCnpjInput ? `${cpfCnpjLabel}: ${cpfCnpjInput}` : '';
+
+      // Atualiza endereço
+      const addrValue = document.getElementById('clientAddress').value.trim();
+      document.getElementById('previewClientAddr').textContent = addrValue;
+
+      // Mostra/esconde linha do endereço
+      const addrRow = document.getElementById('previewClientAddrRow');
+      if (addrRow) {
+        addrRow.style.display = addrValue ? '' : 'none';
+      }
+
+
+      // contratado (texto)
+      document.getElementById('previewContractedName').textContent = document.getElementById('companyName').value || '';
+      document.getElementById('previewContractedCNPJ').textContent = document.getElementById('companyCNPJ').value || '';
+
+      // cabeçalho dinâmico
+      const mode = document.getElementById('pricingMode').value;
+      const thead = document.getElementById('itemsTableHead');
+      if (mode === 'unit') {
+        thead.innerHTML = `
+          <tr>
+            <th>Descrição</th>
+            <th>Qtd</th>
+            <th>Unid</th>
+            <th>Valor unit.</th>
+            <th>Subtotal</th>
+          </tr>`;
+      } else {
+        thead.innerHTML = `
+          <tr>
+            <th>Descrição</th>
+            <th colspan="4">Valor</th>
+          </tr>`;
+      }
+
+      // itens na prévia
+      const tbody = document.querySelector('#previewItemsTable tbody');
+      tbody.innerHTML = '';
+      let subtotal = 0;
+      items.forEach(it => {
+        const tr = document.createElement('tr');
+        if (mode === 'unit') {
+          const st = (it.qty || 0) * (it.price || 0);
+          subtotal += st;
+          tr.innerHTML = `
+            <td style="white-space:pre-line">${it.desc || ''}</td>
+            <td>${it.qty || ''}</td>
+            <td>${it.unit || ''}</td>
+            <td>${toCurrency(it.price || 0)}</td>
+            <td>${toCurrency(st)}</td>`;
+        } else {
+          subtotal += (it.total || 0);
+          tr.innerHTML = `
+            <td style="white-space:pre-line">${it.desc || ''}</td>
+            <td colspan="4">${toCurrency(it.total || 0)}</td>`;
+        }
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('previewSubtotal').textContent = toCurrency(subtotal);
+      document.getElementById('previewEntrada').textContent = toCurrency(subtotal / 2);
+      document.getElementById('previewTotal').textContent = toCurrency(subtotal);
+
+      // unidade e data
+      const unit = document.getElementById('unitLocation').value;
+      const now = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('previewContractDate').textContent =
+        unit + ', ' + now.toLocaleDateString('pt-BR', options);
+    }
+
+    document.getElementById('addItem').addEventListener('click', () => {
+      items.push({ desc: '', qty: 1, unit: '', price: 0 });
+      renderItemsInputs();
+      updatePreview();
+    });
+
+    document.getElementById('clearItems').addEventListener('click', () => {
+      items = [];
+      renderItemsInputs();
+      updatePreview();
+    });
+
+    document.getElementById('updatePreview').addEventListener('click', updatePreview);
+    document.getElementById('pricingMode').addEventListener('change', () => {
+      renderItemsInputs();
+      updatePreview();
+    });
+
+    document.getElementById('form').addEventListener('input', updatePreview);
+
+    document.getElementById('btnPrint').addEventListener('click', () => {
+      const element = document.getElementById('contractPreview');
+      html2pdf().set({
+        margin: 10,
+        filename: 'Orçamento RDA.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }).from(element).save();
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      // limpa cliente
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientCPF').value = '';
+      document.getElementById('clientAddress').value = '';
+      document.getElementById('unitLocation').value = 'Rio Verde – Goiás';
+
+      // limpa itens
+      items = [];
+      renderItemsInputs();
+
+      // limpa fotos do projeto (só aqui, não em outro lugar!)
+      const projectInput = document.getElementById('projectImages');
+      const previewImages = document.getElementById('previewImages');
+      if (projectInput) projectInput.value = '';
+      if (previewImages) previewImages.innerHTML = '';
+
+      updatePreview();
+    });
+
+
+
+
+
+    document.getElementById('projectImages').addEventListener('change', (e) => {
+      const files = e.target.files;
+      const container = document.getElementById('previewImages');
+      container.innerHTML = '';
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          container.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // Máscara automática CPF ou CNPJ
+    document.getElementById('clientCPF').addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, ''); // mantém só números
+
+      if (value.length <= 11) {
+        // CPF
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      } else {
+        // CNPJ
+        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      }
+
+      e.target.value = value;
+    });
+
+
+    addSampleItems();
+    updatePreview();
+  </script>
+</body>
+
+</html>
