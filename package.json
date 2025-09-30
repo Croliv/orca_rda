@@ -1,8 +1,0 @@
-{
-  "name": "orca_rda",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "vercel dev"
-  }
-}
