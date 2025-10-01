@@ -415,9 +415,6 @@
           <option value="Quirinópolis – Goiás">Quirinópolis – Goiás</option>
         </select>
 
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button type="button" id="updatePreview">Atualizar pré-visualização</button>
-        </div>
       </form>
 
       <!-- PREVIEW -->
@@ -668,14 +665,10 @@
       });
 
       function generateBudgetNumber() {
-        let lastNumber = localStorage.getItem('lastBudgetNumber');
-        let nextNumber = lastNumber ? parseInt(lastNumber, 10) + 1 : 1;
-        localStorage.setItem('lastBudgetNumber', nextNumber);
-
-        const formatted = String(nextNumber).padStart(3, '0');
-        const year = new Date().getFullYear();
-        return `Nº ${formatted}/${year}`;
+        // enquanto o Google Sheets não responder
+        return 'Carregando...';
       }
+
 
       document.addEventListener('DOMContentLoaded', () => {
         const budgetNumberElement = document.getElementById('budgetNumber');
@@ -737,7 +730,6 @@
       updatePreview();
     });
 
-    document.getElementById('updatePreview').addEventListener('click', updatePreview);
     document.getElementById('pricingMode').addEventListener('change', () => {
       renderItemsInputs();
       updatePreview();
