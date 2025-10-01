@@ -64,13 +64,22 @@
     input[type="number"],
     textarea,
     select {
-      width: 100%;
+      width: 95%;
       padding: 8px;
       border-radius: 4px;
       border: 1px solid #ccc;
       margin-top: 6px;
       font-size: 14px;
     }
+
+    #pricingMode,#unitLocation {
+      width: 100%;
+      font-size: 16px;
+      /* opcional, para harmonizar com os inputs */
+      padding: 5px 10px;
+      /* opcional, melhora o espaçamento interno */
+    }
+
 
     textarea {
       width: 200px;
@@ -95,9 +104,9 @@
       background: var(--accent);
       color: #fff;
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer
+      padding: 14px 14px;
+      border-radius: 20px;
+      cursor: pointer;
     }
 
     button.secondary {
@@ -343,37 +352,37 @@
        no #previewImages que já existe dentro da pré-visualização do contrato -->
         </div>
 
+        <div>
+          <label>Nome da Empresa / Contratada</label>
+          <input type="text" id="companyName" value="SOUZA FARIA ACM LTDA">
 
-        <label>Nome da Empresa / Contratada</label>
-        <input type="text" id="companyName" value="SOUZA FARIA ACM LTDA">
+          <label>CNPJ</label>
+          <input type="text" id="companyCNPJ" value="38.076.305/0001-50">
 
-        <label>CNPJ</label>
-        <input type="text" id="companyCNPJ" value="38.076.305/0001-50">
+          <label>Endereço da Empresa</label>
+          <input type="text" id="companyAddress" value="RUA: SANTINHO VELOSO, QD: 32, LT: 12, SETOR: PAUZANES">
 
-        <label>Endereço da Empresa</label>
-        <input type="text" id="companyAddress" value="RUA: SANTINHO VELOSO, QD: 32, LT: 12, SETOR: PAUZANES">
+          <label>Contato (Telefone / E-mail)</label>
+          <input type="text" id="companyContact" value="(64) 99268-8158 • reidoacmrv@gmail.com">
 
-        <label>Contato (Telefone / E-mail)</label>
-        <input type="text" id="companyContact" value="(64) 99268-8158 • reidoacmrv@gmail.com">
+          <hr>
 
+          <label>Nome do Contratante</label>
+          <input type="text" id="clientName" value="">
+
+          <label>CPF / CNPJ</label>
+          <input type="text" id="clientCPF" value="" maxlength="18">
+
+          <label>Celular do Contratante</label>
+          <input type="text" id="clientPhone" value="" maxlength="15">
+
+
+          <label>Endereço do Contratante</label>
+          <input type="text" id="clientAddress" value="">
+        </div>
         <hr>
 
-        <label>Nome do Contratante</label>
-        <input type="text" id="clientName" value="">
-
-        <label>CPF / CNPJ</label>
-        <input type="text" id="clientCPF" value="" maxlength="18">
-
-        <label>Celular do Contratante</label>
-        <input type="text" id="clientPhone" value="" maxlength="15">
-
-
-        <label>Endereço do Contratante</label>
-        <input type="text" id="clientAddress" value="">
-
-        <hr>
-
-        <div style="display:flex; align-items:center; gap:150px;">
+        <div style="display:flex; align-items:center; gap:138px;">
           <label for="deliveryForecast">Previsão de Entrega</label>
           <input type="date" id="deliveryForecast">
         </div>
@@ -393,7 +402,7 @@
             <thead>
               <tr>
                 <th>Descrição</th>
-                <th style="width:60px">Qtd</th>
+                <th style="width:80px">Qtd</th>
                 <th style="width:80px">Unid</th>
                 <th style="width:110px">Valor unit.</th>
                 <th style="width:40px"></th>
