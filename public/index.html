@@ -184,6 +184,7 @@
     }
 
     .totals {
+      font-size: 16px;
       margin-top: 8px;
       font-weight: 700;
       text-align: right
@@ -223,6 +224,12 @@
       color: #666
     }
 
+    .left-info {
+      text-align: left;
+      margin-top: 10px;
+    }
+
+
     /* Marca d’água */
     #watermark {
       position: absolute;
@@ -240,6 +247,13 @@
       position: relative;
       z-index: 1;
     }
+
+    .small-text {
+      font-size: 12px;
+      text-align: left;
+      margin-top: 8px;
+    }
+
 
     /* print settings */
     @media print {
@@ -277,16 +291,6 @@
       align-items: flex-start;
     }
 
-    .preview-images img {
-      max-width: 90%;
-      width: 90%;
-      height: auto;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
-      object-fit: cover;
-    }
-
     @media (max-width:800px) {
       .preview-images img {
         max-width: 48%
@@ -316,7 +320,29 @@
       <form class="panel" id="form">
         <h2>Dados do Orçamento</h2>
         <label>Fotos do Projeto</label>
-        <input type="file" id="projectImages" accept="image/*" multiple>
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <!-- coluna esquerda: botão + lista de nomes -->
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <!-- botão customizado abre o file picker -->
+              <label for="projectImages"
+                style="background:var(--accent);color:#fff;padding:6px 8px;border-radius:4px;cursor:pointer;">
+                Escolher arquivos
+              </label>
+              <span id="fileCount" class="muted-small"></span>
+            </div>
+
+            <!-- input escondido (label abre ele) -->
+            <input type="file" id="projectImages" accept="image/*" multiple style="display:none;">
+
+            <!-- aqui aparece a lista: só nome + tamanho + botão remover -->
+            <div id="fileList"></div>
+          </div>
+
+          <!-- a coluna direita fica vazia aqui; o preview continuará sendo colocado
+       no #previewImages que já existe dentro da pré-visualização do contrato -->
+        </div>
+
 
         <label>Nome da Empresa / Contratada</label>
         <input type="text" id="companyName" value="SOUZA FARIA ACM LTDA">
@@ -336,10 +362,24 @@
         <input type="text" id="clientName" value="">
 
         <label>CPF / CNPJ</label>
-        <input type="text" id="clientCPF" value="">
+        <input type="text" id="clientCPF" value="" maxlength="18">
+
+        <label>Celular do Contratante</label>
+        <input type="text" id="clientPhone" value="" maxlength="15">
+
 
         <label>Endereço do Contratante</label>
         <input type="text" id="clientAddress" value="">
+
+        <hr>
+
+        <div style="display:flex; align-items:center; gap:150px;">
+          <label for="deliveryForecast">Previsão de Entrega</label>
+          <input type="date" id="deliveryForecast">
+        </div>
+
+
+
 
         <hr>
 
@@ -387,7 +427,7 @@
 
           <div class="header">
             <div id="logoPreview" class="logoBox">
-              <img src="/logo-rda.png" style="max-width:100%;max-height:70px;object-fit:contain" alt="logo"/>
+              <img src="/logo-rda.png" style="max-width:100%;max-height:70px;object-fit:contain" alt="logo" />
             </div>
             <div class="companyData">
               <div id="previewCompanyName" style="font-weight:700">SOUZA FARIA ACM LTDA</div>
@@ -397,7 +437,12 @@
             </div>
           </div>
 
-          <h1>ORÇAMENTO</h1>
+          <div style="text-align:center; margin-bottom:10px;">
+            <h2 style="margin:0;">ORÇAMENTO</h2>
+            <div id="budgetNumber" style="font-size:14px; font-weight:normal; color:#444;"></div>
+          </div>
+
+
 
           <div id="previewImages" class="preview-images" aria-hidden="false"></div>
 
@@ -405,6 +450,7 @@
             <strong>CONTRATANTE</strong>
             <div>Nome: <span id="previewClientName"></span></div>
             <div><span id="previewClientCPF" class="muted"></span></div>
+            <div id="previewClientPhoneRow">Celular: <span id="previewClientPhone" class="muted"></span></div>
             <div id="previewClientAddrRow">Endereço: <span id="previewClientAddr" class="muted"></span></div>
           </div>
 
@@ -429,6 +475,13 @@
               <div>Subtotal: R$ <span id="previewSubtotal">0.00</span></div>
               <div>Entrada (50% exemplo): R$ <span id="previewEntrada">0.00</span></div>
               <div>Total: R$ <span id="previewTotal">0.00</span></div>
+              <div id="previewDeliveryRow" class="small-text" style="display:none;">
+                Previsão de entrega: <span id="previewDelivery"></span>
+              </div>
+
+              <div id="previewValidityRow" class="small-text">
+                Validade do orçamento: <span id="previewValidity"></span>
+              </div>
             </div>
           </div>
 
@@ -530,6 +583,31 @@
       document.getElementById('previewClientCPF').textContent =
         cpfCnpjInput ? `${cpfCnpjLabel}: ${cpfCnpjInput}` : '';
 
+      // Máscara automática para celular
+      document.getElementById('clientPhone').addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, ''); // mantém só números
+
+        // (99) 99999-9999
+        if (value.length > 0) {
+          value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+          value = value.replace(/(\d{5})(\d)/, '$1-$2');
+        }
+
+        e.target.value = value.substring(0, 15); // limita no formato
+      });
+
+
+      // Atualiza celular
+      const phoneValue = document.getElementById('clientPhone').value.trim();
+      document.getElementById('previewClientPhone').textContent = phoneValue;
+
+      // Mostra/esconde linha do celular
+      const phoneRow = document.getElementById('previewClientPhoneRow');
+      if (phoneRow) {
+        phoneRow.style.display = phoneValue ? '' : 'none';
+      }
+
+
       // Atualiza endereço
       const addrValue = document.getElementById('clientAddress').value.trim();
       document.getElementById('previewClientAddr').textContent = addrValue;
@@ -589,9 +667,55 @@
         tbody.appendChild(tr);
       });
 
+      function generateBudgetNumber() {
+        let lastNumber = localStorage.getItem('lastBudgetNumber');
+        let nextNumber = lastNumber ? parseInt(lastNumber, 10) + 1 : 1;
+        localStorage.setItem('lastBudgetNumber', nextNumber);
+
+        const formatted = String(nextNumber).padStart(3, '0');
+        const year = new Date().getFullYear();
+        return `Nº ${formatted}/${year}`;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const budgetNumberElement = document.getElementById('budgetNumber');
+        if (budgetNumberElement) {
+          budgetNumberElement.textContent = generateBudgetNumber();
+        }
+      });
+
+
       document.getElementById('previewSubtotal').textContent = toCurrency(subtotal);
       document.getElementById('previewEntrada').textContent = toCurrency(subtotal / 2);
       document.getElementById('previewTotal').textContent = toCurrency(subtotal);
+
+      // Previsão de entrega (manual via campo de data)
+      const deliveryInput = document.getElementById('deliveryForecast').value;
+
+      if (deliveryInput) {
+        const deliveryDate = new Date(deliveryInput);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+
+        // Exibe no formato: "30 de setembro de 2025"
+        document.getElementById('previewDelivery').textContent =
+          deliveryDate.toLocaleDateString('pt-BR', options);
+
+        document.getElementById('previewDeliveryRow').style.display = '';
+      } else {
+        // Se não preencher nada → oculta a linha
+        document.getElementById('previewDeliveryRow').style.display = 'none';
+      }
+
+
+      // Validade do orçamento (automática: +30 dias)
+      const validityDays = 30; // você pode mudar para 15, 30...
+      const nowDate = new Date();
+      const validUntil = new Date(nowDate);
+      validUntil.setDate(nowDate.getDate() + validityDays);
+
+      const validityOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('previewValidity').textContent =
+        validUntil.toLocaleDateString('pt-BR', validityOptions);
 
       // unidade e data
       const unit = document.getElementById('unitLocation').value;
@@ -623,53 +747,174 @@
 
     document.getElementById('btnPrint').addEventListener('click', () => {
       const element = document.getElementById('contractPreview');
+
+      // Nome do contratante (primeiro + último)
+      let clientName = document.getElementById("clientName").value.trim() || "SemNome";
+      const parts = clientName.split(" ");
+      if (parts.length > 1) {
+        clientName = parts[0] + " " + parts[parts.length - 1];
+      } else {
+        clientName = parts[0];
+      }
+
+      // Número do orçamento (remove "/" para não quebrar o arquivo)
+      let budgetNumber = document.getElementById("budgetNumber").textContent.trim();
+      budgetNumber = budgetNumber.replace(/\//g, "-");
+
+      // Nome final do arquivo
+      const fileName = `Orçamento RDA - ${clientName} - ${budgetNumber}.pdf`;
+
       html2pdf().set({
         margin: 10,
-        filename: 'Orçamento RDA.pdf',
+        filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       }).from(element).save();
     });
 
+
     document.getElementById('btnReset').addEventListener('click', () => {
-      // limpa cliente
+      // --- seus clears já existentes (exemplo) ---
       document.getElementById('clientName').value = '';
       document.getElementById('clientCPF').value = '';
       document.getElementById('clientAddress').value = '';
+      document.getElementById('clientPhone').value = '';
       document.getElementById('unitLocation').value = 'Rio Verde – Goiás';
 
-      // limpa itens
+      // limpa items e preview relacionados
       items = [];
       renderItemsInputs();
+      updatePreview();
 
-      // limpa fotos do projeto (só aqui, não em outro lugar!)
+      // --- limpeza das imagens e da lista ---
       const projectInput = document.getElementById('projectImages');
       const previewImages = document.getElementById('previewImages');
+      const fileList = document.getElementById('fileList');
+      const fileCount = document.getElementById('fileCount');
+
       if (projectInput) projectInput.value = '';
       if (previewImages) previewImages.innerHTML = '';
+      if (fileList) fileList.innerHTML = '';
+      if (fileCount) fileCount.textContent = '';
 
-      updatePreview();
+      // zera o array de arquivos selecionados (garante que não fica resíduo)
+      if (typeof selectedFiles !== 'undefined') {
+        selectedFiles.length = 0; // limpa mantendo referência
+      } else {
+        // fallback: declara global se não existir
+        window.selectedFiles = [];
+      }
+
+      // atualiza o input.files para refletir que não há arquivos
+      if (typeof updateFileInput === 'function') updateFileInput();
+
+      // re-renderiza a lista/preview caso sejam usadas por outras funções
+      if (typeof renderFiles === 'function') renderFiles();
     });
 
 
+    // elementos
+    const projectInput = document.getElementById('projectImages');
+    const fileList = document.getElementById('fileList');
+    const previewContainer = document.getElementById('previewImages');
+    const fileCount = document.getElementById('fileCount');
 
+    // array com os arquivos realmente selecionados
+    let selectedFiles = [];
 
+    // quando o usuário escolher arquivos
+    projectInput.addEventListener('change', (e) => {
+      const newFiles = Array.from(e.target.files || []);
 
-    document.getElementById('projectImages').addEventListener('change', (e) => {
-      const files = e.target.files;
-      const container = document.getElementById('previewImages');
-      container.innerHTML = '';
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const img = document.createElement('img');
-          img.src = ev.target.result;
-          container.appendChild(img);
-        };
-        reader.readAsDataURL(file);
+      // adiciona sem duplicar (mesmo name+size)
+      newFiles.forEach(f => {
+        if (!selectedFiles.some(sf => sf.name === f.name && sf.size === f.size)) {
+          selectedFiles.push(f);
+        }
       });
+
+      updateFileInput();
+      renderFiles();
     });
+
+    // renderiza lista (esquerda) e thumbs (direita)
+    function renderFiles() {
+      fileList.innerHTML = '';
+      previewContainer.innerHTML = '';
+
+      fileCount.textContent = selectedFiles.length ? `${selectedFiles.length} arquivo(s)` : '';
+
+      selectedFiles.forEach((file, index) => {
+        // LISTA (nome + tamanho + botão)
+        const item = document.createElement('div');
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'space-between';
+        item.style.gap = '8px';
+        item.style.marginTop = '6px';
+        item.style.paddingRight = '6px';
+
+        const name = document.createElement('span');
+        name.textContent = `${file.name} (${formatFileSize(file.size)})`;
+        name.style.flex = '1';
+        name.style.wordBreak = 'break-word';
+        name.style.fontSize = '12px';   // menor que o normal
+        name.style.color = '#555';      // cinza mais discreto
+
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = '✖';
+        btn.style.background = 'transparent';
+        btn.style.border = 'none';
+        btn.style.color = 'red';
+        btn.style.cursor = 'pointer';
+        btn.style.fontSize = '14px';
+        btn.addEventListener('click', () => {
+          // remove do array e re-renderiza
+          selectedFiles.splice(index, 1);
+          updateFileInput();
+          renderFiles();
+        });
+
+        item.appendChild(name);
+        item.appendChild(btn);
+        fileList.appendChild(item);
+
+        // PREVIEW (direita) — só para imagens
+        if (file.type && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = document.createElement('img');
+            img.src = ev.target.result;
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            img.style.border = '1px solid #ddd';
+            img.style.borderRadius = '10px';
+            img.style.display = 'block';
+            previewContainer.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // atualiza projectInput.files para refletir seleção atual (necessário para upload/export)
+    function updateFileInput() {
+      const dataTransfer = new DataTransfer();
+      selectedFiles.forEach(f => dataTransfer.items.add(f));
+      projectInput.files = dataTransfer.files;
+    }
+
+    // formata bytes pra KB/MB
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
 
     // Máscara automática CPF ou CNPJ
     document.getElementById('clientCPF').addEventListener('input', function (e) {
@@ -691,6 +936,22 @@
       e.target.value = value;
     });
 
+    async function getNextBudgetNumber() {
+      const url = "https://script.google.com/macros/s/AKfycbyiU7ciKhaJdfJ0PYMUi6c6vVZev8Rq8NtEM7zwbBBfzY1YiE8VqE8BylYGOJQ1uX7EBQ/exec";
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const year = new Date().getFullYear();
+      return `Nº ${data.numero}/${year}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const budgetNumberElement = document.getElementById('budgetNumber');
+      if (budgetNumberElement) {
+        budgetNumberElement.textContent = await getNextBudgetNumber();
+      }
+    });
+
 
     addSampleItems();
     updatePreview();
@@ -699,7 +960,3 @@
 
 
 </html>
-
-
-
-
