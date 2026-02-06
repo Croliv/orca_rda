@@ -674,8 +674,8 @@
       previewDeliveryRow.style.display = 'none';
     }
 
-    // Validade do orçamento (automática: +30 dias)
-    const validityDays = 30;
+    // Validade do orçamento (automática: +20 dias)
+    const validityDays = 20;
     const nowDate = new Date();
     const validUntil = new Date(nowDate);
     validUntil.setDate(nowDate.getDate() + validityDays);
