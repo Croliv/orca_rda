@@ -323,7 +323,7 @@
 <body>
   <div class="app">
     <div class="topButtons">
-      <div class="muted-small">&nbsp;</div>
+      <div class="muted-small">Selecione ou veja todas as opções</div>
       <div>
         <button id="btnPrint">Exportar / Salvar PDF</button>
         <button id="btnReset" class="secondary">Limpar formulário</button>
@@ -692,7 +692,7 @@
         if (previewPaymentRow) previewPaymentRow.style.display = 'none';
       } else {
         if (previewPaymentRow) previewPaymentRow.style.display = '';
-        if (previewPaymentEl) previewPaymentEl.textContent = paymentMethod || 'Selecione ou veja todas as opções';
+        if (previewPaymentEl) previewPaymentEl.textContent = paymentMethod || '&nbsp;';
         if (paymentDetailEl) {
           let paymentDetail = '';
           const totalValue = subtotal;
